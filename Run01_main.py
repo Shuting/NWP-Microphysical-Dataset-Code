@@ -18,16 +18,13 @@ os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ['CUDA_VISIBLE_DEVICES'] = "1"
 config = tf.compat.v1.ConfigProto(gpu_options=tf.compat.v1.GPUOptions(allow_growth=True))
 sess = tf.compat.v1.Session(config=config)
-"""
+
 # load training dataset
 # use 1 weather processes to train model, you can try a larger number
 train_data_set = generate_train_dataset(tr_num=20, each_num=3000)
 
 # build a model
 model = dnn_model()
-# model.load_weights("trained_model_0413.h5")
-# model.summary()
-
 
 # train model
 model_name = 'column_trained_model_0415.h5'
@@ -52,17 +49,3 @@ pred_label, true_label = test_model(test_data_set, model, do_save=True, res_name
 
 # analyze test results
 analyze_results(true_label, pred_label, var_id=0, level=1, save_plot=True, plot_name='column_com_res_0415.png')
-"""
-model = dnn_model()
-model.load_weights("column_trained_model_0415.h5")
-all_cs = np.zeros((10, 12))
-all_mse = np.zeros((10, 12))
-for i in range(10):
-   test_data_set = generate_test_dataset(test_data_id=i+21)
-   res_name = "./res_column_0415/test_data" + str(i+21) + ".mat"
-   pred_label, true_label = test_model(test_data_set, model, do_save=True, res_name=res_name)
-
-   for j in range(12):
-       all_cs[i, j], all_mse[i, j] = analyze_results(true_label[:, :, :, j], pred_label[:, :, :, j], data_size=50, do_plot=False)
-
-sci.savemat("column_res_my.mat", {'all_cs': all_cs, 'all_mse': all_mse}, do_compression=True)
